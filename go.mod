@@ -5,6 +5,7 @@ go 1.21.1
 require (
 	github.com/VictoriaMetrics/fastcache v1.12.1
 	github.com/dgraph-io/ristretto v0.1.1
+	github.com/elastic/go-elasticsearch/v8 v8.13.0
 	github.com/koding/cache v0.0.0-20161222233015-e8a81b0b3f20
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 )
