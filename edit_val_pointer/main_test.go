@@ -6,21 +6,6 @@ import (
 	"github.com/elastic/go-elasticsearch/v8/typedapi/types"
 )
 
-type Filter struct {
-	Field      string        `json:"field,omitempty"`
-	Gt         interface{}   `json:"gt,omitempty"`
-	Gte        interface{}   `json:"gte,omitempty"`
-	Lt         interface{}   `json:"lt,omitempty"`
-	Lte        interface{}   `json:"lte,omitempty"`
-	Equals     []interface{} `json:"equals,omitempty"`
-	Or         []*Filter     `json:"or,omitempty"`
-	And        []*Filter     `json:"and,omitempty"`
-	Search     interface{}   `json:"search,omitempty"`
-	NotEqual   []interface{} `json:"not_equal,omitempty"`
-	MultiMatch []interface{} `json:"multi_match,omitempty"`
-	Exists     interface{}   `json:"exists,omitempty"`
-}
-
 func populateNumberRangeQuery(numberRangeQuery *types.NumberRangeQuery, gt, gte, lt, lte *float64) {
 	var floatValue types.Float64
 	if gt != nil {
@@ -41,7 +26,7 @@ func populateNumberRangeQuery(numberRangeQuery *types.NumberRangeQuery, gt, gte,
 	}
 }
 
-func populateNumberRangeQuery2(numberRangeQuery *types.NumberRangeQuery, gt, gte, lt, lte *float64) *types.NumberRangeQuery {
+func populateNumberRangeQuery2(numberRangeQuery types.NumberRangeQuery, gt, gte, lt, lte *float64) types.NumberRangeQuery {
 	var floatValue types.Float64
 	if gt != nil {
 		floatValue = types.Float64(*gt)
@@ -63,20 +48,81 @@ func populateNumberRangeQuery2(numberRangeQuery *types.NumberRangeQuery, gt, gte
 	return numberRangeQuery
 }
 
-func BenchmarkMethod1(b *testing.B) {
-	for i := 0; i < b.N; i++ {
-		f := &types.NumberRangeQuery{}
-		ff := float64(10000)
-		populateNumberRangeQuery(f, &ff, &ff, &ff, &ff)
+// func BenchmarkMethod1(b *testing.B) {
+// 	for i := 0; i < b.N; i++ {
+// 		f := types.NumberRangeQuery{}
+// 		ff := float64(10000)
+// 		populateNumberRangeQuery(&f, &ff, &ff, &ff, &ff)
 
+// 		if ff != float64(*f.Gt) {
+// 			panic("not same")
+// 		}
+
+// 	}
+// }
+
+// func BenchmarkMethod2(b *testing.B) {
+// 	for i := 0; i < b.N; i++ {
+// 		f := types.NumberRangeQuery{}
+// 		ff := float64(10000)
+
+// 		f = populateNumberRangeQuery2(f, &ff, &ff, &ff, &ff)
+// 		if ff != float64(*f.Gt) {
+// 			panic("not same")
+// 		}
+// 	}
+// }
+
+type A struct {
+	X, Y, Z, F, G, H, J, K string
+}
+
+func (a *A) EditPointer(str string) {
+	a.X = str
+	a.Y = str
+	a.Z = str
+	a.F = str
+	a.G = str
+	a.H = str
+	a.J = str
+	a.K = str
+}
+
+func (a A) EditNon(str string) A {
+	a.X = str
+	a.Y = str
+	a.Z = str
+	a.F = str
+	a.G = str
+	a.H = str
+	a.J = str
+	a.K = str
+
+	return a
+}
+
+const STR = "hi hello world boi some boi boi yo boi boi test boi boi asddhlskdjflaksdjflakjdfalkjdsfhlakjdfhlaskjdfhlakjdfblaskdfblakjdsblskaj vlaskdj laksdj flakjd flkas dflakjsd flakjsd flajskd flaksjdfalksdjfhlasjdhlfajkhdflakjhfd"
+
+func BenchmarkMethodPointer(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		a := &A{}
+
+		a.EditPointer(STR)
+
+		if a.K != STR {
+			panic("not same")
+		}
 	}
 }
 
-func BenchmarkMethod2(b *testing.B) {
+func BenchmarkMethodNonPointer(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		f := &types.NumberRangeQuery{}
-		ff := float64(10000)
+		a := A{}
 
-		f = populateNumberRangeQuery2(f, &ff, &ff, &ff, &ff)
+		temp := a.EditNon(STR)
+
+		if temp.K != STR {
+			panic("not same")
+		}
 	}
 }
